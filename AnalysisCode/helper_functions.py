@@ -65,26 +65,6 @@ def getNormalizedData(ECM):
 
     return normalized_ECM
 
-def getFBA(model):
-    all_bm_met = []
-    for met in model.metabolites:
-        if  'bm' in met.id :
-            all_bm_met.append(met.id) 
-        #print(met)
-    bm_met = model.metabolites.get_by_id(max(all_bm_met, key=len))
-
-    for r in model.reactions:
-        if bm_met in r.metabolites:
-            #r.bounds = (0,1000)
-            r.objective_coefficient = 1
-            model.objective = r
-
-    optimal = model.optimize()
-    if optimal.status == 'optimal':
-        other_fluxes = optimal.fluxes
-
-    return optimal, other_fluxes
-
 def helper_model_to_yield_2D(model_name, substrate, product, ECMs):
     yields = [
         ECMs[model_name][substrate],
