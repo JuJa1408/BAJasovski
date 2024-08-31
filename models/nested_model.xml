@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" sboTerm="SBO:0000624" level="3" version="1" fbc:required="false">
+  <model metaid="meta_nested_model_fromscratch" id="nested_model_fromscratch" fbc:strict="true">
+    <listOfUnitDefinitions>
+      <unitDefinition id="mmol_per_gDW_per_hr">
+        <listOfUnits>
+          <unit kind="mole" exponent="1" scale="-3" multiplier="1"/>
+          <unit kind="gram" exponent="-1" scale="0" multiplier="1"/>
+          <unit kind="second" exponent="-1" scale="0" multiplier="3600"/>
+        </listOfUnits>
+      </unitDefinition>
+    </listOfUnitDefinitions>
+    <listOfCompartments>
+      <compartment id="e" constant="true"/>
+      <compartment id="c" constant="true"/>
+    </listOfCompartments>
+    <listOfSpecies>
+      <species id="M_M_CO2ex_gen_fap" compartment="e" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="M_M_NH3ex_gen_fap" compartment="e" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="M_M_bm_fap" compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="M_M_hv_gen_fap" compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="M_M_glycpool_gen_fap" compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="M_M_O2expool_gen_fap" compartment="e" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="M_M_H2pool_gen_fap" compartment="e" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="M_M_ATPex_fap" compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="M_M_PHB_fap" compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="M_M_ac_pool_fap" compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="M_M_SO4ex_gen_srb" compartment="e" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="M_M_H2Sex_gen_srb" compartment="e" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="M_M_bm_srb" compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="M_M_NH3ex_gen_srb" compartment="e" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="M_M_H2pool_gen_srb" compartment="e" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="M_M_ac_pool_srb" compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="M_M_CO2ex_gen_srb" compartment="e" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="M_M_ATPex_srb" compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="M_M_CO2ex_gen_syn" compartment="e" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="M_M_NH3_syn" compartment="e" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="M_M_bm_syn" compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="M_M_hv_gen_syn" compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="M_M_O2expool_gen_syn" compartment="e" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="M_M_glyox_syn" compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="M_M_ac_pool_syn" compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="M_M_polyglcex_gen_syn" compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="M_M_glycpool_gen_syn" compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="M_bm_fap_srb_syn" compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="M_bm" compartment="c" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+    </listOfSpecies>
+    <listOfParameters>
+      <parameter sboTerm="SBO:0000626" id="cobra_default_lb" value="-1000" constant="true"/>
+      <parameter sboTerm="SBO:0000626" id="cobra_default_ub" value="1000" constant="true"/>
+      <parameter sboTerm="SBO:0000626" id="cobra_0_bound" value="0" constant="true"/>
+      <parameter sboTerm="SBO:0000626" id="minus_inf" value="-INF" constant="true"/>
+      <parameter sboTerm="SBO:0000626" id="plus_inf" value="INF" constant="true"/>
+    </listOfParameters>
+    <listOfReactions>
+      <reaction id="R_ECM_0" name="Elementary Mode 0" reversible="false" fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_NH3ex_gen_fap" stoichiometry="1" constant="true"/>
+          <speciesReference species="M_M_hv_gen_fap" stoichiometry="3.247" constant="true"/>
+          <speciesReference species="M_M_glycpool_gen_fap" stoichiometry="2.776" constant="true"/>
+          <speciesReference species="M_M_O2expool_gen_fap" stoichiometry="0.574" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="M_M_CO2ex_gen_fap" stoichiometry="1.876" constant="true"/>
+          <speciesReference species="M_M_bm_fap" stoichiometry="0.08" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R_ECM_1" name="Elementary Mode 1" reversible="false" fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_NH3ex_gen_fap" stoichiometry="1" constant="true"/>
+          <speciesReference species="M_M_hv_gen_fap" stoichiometry="9.559" constant="true"/>
+          <speciesReference species="M_M_glycpool_gen_fap" stoichiometry="2.776" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="M_M_CO2ex_gen_fap" stoichiometry="1.876" constant="true"/>
+          <speciesReference species="M_M_H2pool_gen_fap" stoichiometry="1.148" constant="true"/>
+          <speciesReference species="M_M_bm_fap" stoichiometry="0.08" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R_ECM_2" name="Elementary Mode 2" reversible="false" fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_NH3ex_gen_fap" stoichiometry="1" constant="true"/>
+          <speciesReference species="M_M_hv_gen_fap" stoichiometry="9.75" constant="true"/>
+          <speciesReference species="M_M_glycpool_gen_fap" stoichiometry="2.393" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="M_M_CO2ex_gen_fap" stoichiometry="1.11" constant="true"/>
+          <speciesReference species="M_M_bm_fap" stoichiometry="0.08" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R_ECM_3" name="Elementary Mode 3" reversible="false" fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_hv_gen_fap" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="M_M_ATPex_fap" stoichiometry="0.5" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R_ECM_4" name="Elementary Mode 4" reversible="false" fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_hv_gen_fap" stoichiometry="12" constant="true"/>
+          <speciesReference species="M_M_glycpool_gen_fap" stoichiometry="0.5" constant="true"/>
+          <speciesReference species="M_M_ac_pool_fap" stoichiometry="3" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="M_M_CO2ex_gen_fap" stoichiometry="1" constant="true"/>
+          <speciesReference species="M_M_PHB_fap" stoichiometry="1.5" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R_ECM_5" name="Elementary Mode 5" reversible="false" fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_NH3ex_gen_fap" stoichiometry="1" constant="true"/>
+          <speciesReference species="M_M_hv_gen_fap" stoichiometry="11.131" constant="true"/>
+          <speciesReference species="M_M_glycpool_gen_fap" stoichiometry="1.728" constant="true"/>
+          <speciesReference species="M_M_ac_pool_fap" stoichiometry="0.524" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="M_M_CO2ex_gen_fap" stoichiometry="0.828" constant="true"/>
+          <speciesReference species="M_M_H2pool_gen_fap" stoichiometry="0.1" constant="true"/>
+          <speciesReference species="M_M_bm_fap" stoichiometry="0.08" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R_ECM_6" name="Elementary Mode 6" reversible="false" fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_SO4ex_gen_srb" stoichiometry="328.893" constant="true"/>
+          <speciesReference species="M_M_NH3ex_gen_srb" stoichiometry="37.539" constant="true"/>
+          <speciesReference species="M_M_H2pool_gen_srb" stoichiometry="1309.108" constant="true"/>
+          <speciesReference species="M_M_ac_pool_srb" stoichiometry="68.994" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="M_M_H2Sex_gen_srb" stoichiometry="328.893" constant="true"/>
+          <speciesReference species="M_M_bm_srb" stoichiometry="3" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R_ECM_7" name="Elementary Mode 7" reversible="false" fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_SO4ex_gen_srb" stoichiometry="160.668" constant="true"/>
+          <speciesReference species="M_M_CO2ex_gen_srb" stoichiometry="22.672" constant="true"/>
+          <speciesReference species="M_M_NH3ex_gen_srb" stoichiometry="18.77" constant="true"/>
+          <speciesReference species="M_M_H2pool_gen_srb" stoichiometry="684.784" constant="true"/>
+          <speciesReference species="M_M_ac_pool_srb" stoichiometry="23.161" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="M_M_H2Sex_gen_srb" stoichiometry="160.668" constant="true"/>
+          <speciesReference species="M_M_bm_srb" stoichiometry="1.5" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R_ECM_8" name="Elementary Mode 8" reversible="false" fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_SO4ex_gen_srb" stoichiometry="107.112" constant="true"/>
+          <speciesReference species="M_M_CO2ex_gen_srb" stoichiometry="45.996" constant="true"/>
+          <speciesReference species="M_M_NH3ex_gen_srb" stoichiometry="12.513" constant="true"/>
+          <speciesReference species="M_M_H2pool_gen_srb" stoichiometry="518.285" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="M_M_H2Sex_gen_srb" stoichiometry="107.112" constant="true"/>
+          <speciesReference species="M_M_bm_srb" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R_ECM_9" name="Elementary Mode 9" reversible="false" fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_SO4ex_gen_srb" stoichiometry="1" constant="true"/>
+          <speciesReference species="M_M_ac_pool_srb" stoichiometry="1.4" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="M_M_H2Sex_gen_srb" stoichiometry="1" constant="true"/>
+          <speciesReference species="M_M_CO2ex_gen_srb" stoichiometry="2.8" constant="true"/>
+          <speciesReference species="M_M_H2pool_gen_srb" stoichiometry="1.6" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R_ECM_10" name="Elementary Mode 10" reversible="false" fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_SO4ex_gen_srb" stoichiometry="1" constant="true"/>
+          <speciesReference species="M_M_ac_pool_srb" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="M_M_H2Sex_gen_srb" stoichiometry="1" constant="true"/>
+          <speciesReference species="M_M_CO2ex_gen_srb" stoichiometry="2" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R_ECM_11" name="Elementary Mode 11" reversible="false" fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_SO4ex_gen_srb" stoichiometry="1" constant="true"/>
+          <speciesReference species="M_M_ac_pool_srb" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="M_M_H2Sex_gen_srb" stoichiometry="1" constant="true"/>
+          <speciesReference species="M_M_ATPex_srb" stoichiometry="0.5" constant="true"/>
+          <speciesReference species="M_M_CO2ex_gen_srb" stoichiometry="2" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R_ECM_12" name="Elementary Mode 12" reversible="false" fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_CO2ex_gen_syn" stoichiometry="1.838" constant="true"/>
+          <speciesReference species="M_M_NH3_syn" stoichiometry="0.5" constant="true"/>
+          <speciesReference species="M_M_hv_gen_syn" stoichiometry="15.724" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="M_M_bm_syn" stoichiometry="0.04" constant="true"/>
+          <speciesReference species="M_M_O2expool_gen_syn" stoichiometry="1.795" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R_ECM_13" name="Elementary Mode 13" reversible="false" fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_CO2ex_gen_syn" stoichiometry="1" constant="true"/>
+          <speciesReference species="M_M_hv_gen_syn" stoichiometry="7.125" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="M_M_O2expool_gen_syn" stoichiometry="0.5" constant="true"/>
+          <speciesReference species="M_M_glyox_syn" stoichiometry="0.5" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R_ECM_14" name="Elementary Mode 14" reversible="false" fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_CO2ex_gen_syn" stoichiometry="1" constant="true"/>
+          <speciesReference species="M_M_hv_gen_syn" stoichiometry="8" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="M_M_O2expool_gen_syn" stoichiometry="1" constant="true"/>
+          <speciesReference species="M_M_ac_pool_syn" stoichiometry="0.5" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R_ECM_15" name="Elementary Mode 15" reversible="false" fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_CO2ex_gen_syn" stoichiometry="1" constant="true"/>
+          <speciesReference species="M_M_hv_gen_syn" stoichiometry="8" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="M_M_O2expool_gen_syn" stoichiometry="1" constant="true"/>
+          <speciesReference species="M_M_ac_pool_syn" stoichiometry="0.5" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R_ECM_16" name="Elementary Mode 16" reversible="false" fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_CO2ex_gen_syn" stoichiometry="3" constant="true"/>
+          <speciesReference species="M_M_hv_gen_syn" stoichiometry="24.5" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="M_M_polyglcex_gen_syn" stoichiometry="0.5" constant="true"/>
+          <speciesReference species="M_M_O2expool_gen_syn" stoichiometry="3" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R_ECM_17" name="Elementary Mode 17" reversible="false" fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_CO2ex_gen_syn" stoichiometry="1.838" constant="true"/>
+          <speciesReference species="M_M_NH3_syn" stoichiometry="0.5" constant="true"/>
+          <speciesReference species="M_M_hv_gen_syn" stoichiometry="15.724" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="M_M_bm_syn" stoichiometry="0.04" constant="true"/>
+          <speciesReference species="M_M_O2expool_gen_syn" stoichiometry="1.795" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R_ECM_18" name="Elementary Mode 18" reversible="false" fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_CO2ex_gen_syn" stoichiometry="1" constant="true"/>
+          <speciesReference species="M_M_hv_gen_syn" stoichiometry="10.25" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="M_M_O2expool_gen_syn" stoichiometry="0.75" constant="true"/>
+          <speciesReference species="M_M_glycpool_gen_syn" stoichiometry="0.5" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R_vlv_glyc_fap" reversible="true" fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_glycpool_gen_syn" stoichiometry="0.5" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="M_M_glycpool_gen_fap" stoichiometry="0.5" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R_vlv_ac_fap" reversible="true" fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_ac_pool_syn" stoichiometry="0.5" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="M_M_ac_pool_fap" stoichiometry="0.5" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R_vlv_ac_srb" reversible="true" fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_ac_pool_syn" stoichiometry="0.5" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="M_M_ac_pool_srb" stoichiometry="0.5" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R_bm_obj" reversible="false" fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_bm_fap" stoichiometry="1" constant="true"/>
+          <speciesReference species="M_M_bm_srb" stoichiometry="1" constant="true"/>
+          <speciesReference species="M_M_bm_syn" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="M_bm" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R_bm1" reversible="false" fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_bm_fap" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="M_bm_fap_srb_syn" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R_bm2" reversible="false" fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_bm_srb" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="M_bm_fap_srb_syn" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R_bm3" reversible="false" fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_bm_syn" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="M_bm_fap_srb_syn" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction metaid="meta_R_DM_M_PHB_fap" sboTerm="SBO:0000628" id="R_DM_M_PHB_fap" name=" demand" reversible="false" fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_PHB_fap" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+      </reaction>
+      <reaction metaid="meta_R_DM_M_ATPex_srb" sboTerm="SBO:0000628" id="R_DM_M_ATPex_srb" name=" demand" reversible="false" fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_ATPex_srb" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+      </reaction>
+      <reaction metaid="meta_R_DM_M_ATPex_fap" sboTerm="SBO:0000628" id="R_DM_M_ATPex_fap" name=" demand" reversible="false" fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_ATPex_fap" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+      </reaction>
+      <reaction metaid="meta_R_DM_bm_fap_srb_syn" sboTerm="SBO:0000628" id="R_DM_bm_fap_srb_syn" name=" demand" reversible="false" fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_bm_fap_srb_syn" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+      </reaction>
+      <reaction metaid="meta_R_DM_bm" sboTerm="SBO:0000628" id="R_DM_bm" name=" demand" reversible="false" fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_bm" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+      </reaction>
+      <reaction metaid="meta_R_SK_M_hv_gen_fap" sboTerm="SBO:0000632" id="R_SK_M_hv_gen_fap" name=" sink" reversible="true" fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_hv_gen_fap" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+      </reaction>
+      <reaction metaid="meta_R_SK_M_hv_gen_syn" sboTerm="SBO:0000632" id="R_SK_M_hv_gen_syn" name=" sink" reversible="true" fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_hv_gen_syn" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+      </reaction>
+      <reaction metaid="meta_R_SK_M_polyglcex_gen_syn" sboTerm="SBO:0000632" id="R_SK_M_polyglcex_gen_syn" name=" sink" reversible="true" fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_polyglcex_gen_syn" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+      </reaction>
+      <reaction metaid="meta_R_EX_M_CO2ex_gen_fap" sboTerm="SBO:0000627" id="R_EX_M_CO2ex_gen_fap" name=" exchange" reversible="true" fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_CO2ex_gen_fap" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+      </reaction>
+      <reaction metaid="meta_R_EX_M_CO2ex_gen_srb" sboTerm="SBO:0000627" id="R_EX_M_CO2ex_gen_srb" name=" exchange" reversible="true" fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_CO2ex_gen_srb" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+      </reaction>
+      <reaction metaid="meta_R_EX_M_CO2ex_gen_syn" sboTerm="SBO:0000627" id="R_EX_M_CO2ex_gen_syn" name=" exchange" reversible="true" fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_CO2ex_gen_syn" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+      </reaction>
+      <reaction metaid="meta_R_EX_M_H2Sex_gen_srb" sboTerm="SBO:0000627" id="R_EX_M_H2Sex_gen_srb" name=" exchange" reversible="true" fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_H2Sex_gen_srb" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+      </reaction>
+      <reaction metaid="meta_R_EX_M_NH3ex_gen_fap" sboTerm="SBO:0000627" id="R_EX_M_NH3ex_gen_fap" name=" exchange" reversible="true" fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_NH3ex_gen_fap" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+      </reaction>
+      <reaction metaid="meta_R_EX_M_NH3ex_gen_srb" sboTerm="SBO:0000627" id="R_EX_M_NH3ex_gen_srb" name=" exchange" reversible="true" fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_NH3ex_gen_srb" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+      </reaction>
+      <reaction metaid="meta_R_EX_M_NH3_syn" sboTerm="SBO:0000627" id="R_EX_M_NH3_syn" name=" exchange" reversible="true" fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_NH3_syn" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+      </reaction>
+      <reaction metaid="meta_R_EX_M_O2expool_gen_fap" sboTerm="SBO:0000627" id="R_EX_M_O2expool_gen_fap" name=" exchange" reversible="true" fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_O2expool_gen_fap" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+      </reaction>
+      <reaction metaid="meta_R_EX_M_O2expool_gen_syn" sboTerm="SBO:0000627" id="R_EX_M_O2expool_gen_syn" name=" exchange" reversible="true" fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_O2expool_gen_syn" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+      </reaction>
+      <reaction metaid="meta_R_EX_M_SO4ex_gen_srb" sboTerm="SBO:0000627" id="R_EX_M_SO4ex_gen_srb" name=" exchange" reversible="true" fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_SO4ex_gen_srb" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+      </reaction>
+      <reaction metaid="meta_R_EX_M_H2pool_gen_fap" sboTerm="SBO:0000627" id="R_EX_M_H2pool_gen_fap" name=" exchange" reversible="true" fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_H2pool_gen_fap" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+      </reaction>
+      <reaction metaid="meta_R_EX_M_H2pool_gen_srb" sboTerm="SBO:0000627" id="R_EX_M_H2pool_gen_srb" name=" exchange" reversible="true" fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub">
+        <listOfReactants>
+          <speciesReference species="M_M_H2pool_gen_srb" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+      </reaction>
+    </listOfReactions>
+    <fbc:listOfObjectives fbc:activeObjective="obj">
+      <fbc:objective fbc:id="obj" fbc:type="maximize">
+        <fbc:listOfFluxObjectives>
+          <fbc:fluxObjective fbc:reaction="R_bm_obj" fbc:coefficient="1"/>
+        </fbc:listOfFluxObjectives>
+      </fbc:objective>
+    </fbc:listOfObjectives>
+  </model>
+</sbml>
