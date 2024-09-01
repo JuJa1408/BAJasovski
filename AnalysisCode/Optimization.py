@@ -109,18 +109,25 @@ def getOptimization(ECM_dG, model, method):
 
 def getFBA(model):
     all_bm_met = []
+    """
     for met in model.metabolites:
         if  'bm' in met.id :
             all_bm_met.append(met.id) 
         #print(met)
-    bm_met = model.metabolites.get_by_id(max(all_bm_met, key=len))
+    for met in all_bm_met:
+        if 'obj' in met:
+            bm_met = met
+            break
+        else:
+            bm_met = model.metabolites.get_by_id(max(all_bm_met, key=len))
 
     for r in model.reactions:
         if bm_met in r.metabolites:
             #r.bounds = (0,1000)
             r.objective_coefficient = 1
             model.objective = r
-
+    """
+    optimal = 0
     optimal = model.optimize()
     if optimal.status == 'optimal':
         other_fluxes = optimal.fluxes
@@ -187,9 +194,11 @@ def plotCorrelationMatrix(maxBiomass, model_name):
 
     return True
 
-def plotOptimizedFluxesFBAvsECM(model, ECM_allFlux, model_name):
+def plotOptimizedFluxesFBAvsECM(optimal_FBA, model, ECM_allFlux, model_name):
 
-    objectiveFlux, FBA_allFlux = getFBA(model)
+    #objectiveFlux, FBA_allFlux = getFBA(model)
+    #optimal_FBA = model.optimize()
+    FBA_allFlux = optimal_FBA.fluxes
     FBA_allFlux_norm = FBA_allFlux/(sum(abs(FBA_allFlux)))
     ECM_allFlux_norm = ECM_allFlux/(sum(abs(ECM_allFlux)))
 
@@ -229,6 +238,126 @@ def plotOptimizedFluxvsdG(maxBiomass, model_name):
     plt.show()
     return True
 
+def helperInteravtionAnalysis(community_fluxes, individual_fluxes):
+    synergy = {}
+    competition = {}
+    additive_effects = {}
+    common_reactions = set()
+
+    
+    common_reactions = set(community_fluxes.index)
+
+    # Bestimme die gemeinsamen Reaktionen
+    common_reactions.intersection_update(individual_fluxes.index)
+    for reaction in common_reactions:
+        community_flux = community_fluxes[reaction]
+        if not math.isnan(individual_fluxes[reaction]):
+            print(individual_fluxes[reaction])
+
+        individual_sum = np.sum(individual_fluxes[reaction])
+        individual_sum = np.sum(individual_sum, axis=0) 
+
+        expected_additive_effect = individual_sum
+        additive_effects[reaction] = expected_additive_effect
+        
+        abs_community_flux = abs(community_flux)
+        abs_individual_sum = abs(individual_sum)
+
+        if abs_individual_sum == 0:
+            if abs_community_flux == 0:
+                synergy[reaction] = 0
+                competition[reaction] = 0
+                interaction = 0
+            else:
+                interaction = np.sign(community_flux)*100
+        else:
+            interaction = (abs_community_flux - abs_individual_sum) / abs_individual_sum * 100
+
+        if interaction > 0:
+            synergy[reaction] = interaction
+        elif interaction < 0:
+            competition[reaction] = interaction
+
+    results_df = pd.DataFrame({'Community Flux': community_fluxes[list(common_reactions)], 
+                                'Expected Additive Effect': pd.Series(additive_effects),
+                                'Synergy': pd.Series(synergy), 
+                                'Competition': pd.Series(competition)})
+
+
+
+
+    return results_df, common_reactions
+
+def getInteractionAnalysis(allFlux_fap, allFlux_srb, allFlux_syn, allFlux_comp, allFlux_pool):
+    allFlux_additive = pd.concat([allFlux_fap, allFlux_srb, allFlux_syn], axis=0)
+    sumFlux = (sum(abs(allFlux_additive)))
+    allFlux_additive = allFlux_additive/sumFlux
+
+    allFlux_comp = allFlux_comp/(sum(abs(allFlux_comp)))
+    allFlux_pool =allFlux_pool/(sum(abs(allFlux_pool)))
+   
+    individual_fluxes = allFlux_additive#pd.concat([allFlux_fap, allFlux_srb, allFlux_syn], axis=0)
+
+    compAnalysis, commonreactions = helperInteravtionAnalysis(allFlux_comp, individual_fluxes)
+    plot_synergy_competition(compAnalysis, 'Compartmentalized')
+
+    poolAnalysis, commonreactions = helperInteravtionAnalysis(allFlux_pool, individual_fluxes)
+    plot_synergy_competition(poolAnalysis, 'Pooled')
+
+    combined_df = pd.DataFrame({
+        'Community Model 1': compAnalysis['Community Flux'],
+        'Community Model 2': poolAnalysis['Community Flux'],
+        'Expected Additive Effect': compAnalysis['Expected Additive Effect']
+    })
+    sorted_df = combined_df.reindex(commonreactions).sort_values(by='Expected Additive Effect')
+
+    # Erstellung des Plots
+    plot_combined_synergy_competition_line(sorted_df.index, combined_df, sorted_df['Expected Additive Effect'].values)
+
+    return True
+
+def plot_synergy_competition(results_df, modelname):
+    # Kombiniere Synergie und Konkurrenz in einer Spalte
+    results_df['Effect'] = results_df['Synergy'].combine_first(results_df['Competition'])
+    
+    # Bereite die Daten für das Plotten vor
+    effects = results_df['Effect']
+    colors = ['blue' if val > 0 else 'orange' for val in effects]
+    maxcompetionEffect = np.min(effects)
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.bar(effects.index, effects, color=colors, label='Synergy/Competition')
+    
+    ax.set_ylabel('Percentage (%)')
+    ax.set_title('Synergy and Competition in ' + modelname + ' Model', fontsize=22)
+    synergy_patch = mpatches.Patch(color='blue', label='Synergy (>0)')
+    competition_patch = mpatches.Patch(color='orange', label='Competition (<0)')
+    ax.legend(handles=[synergy_patch, competition_patch], fontsize=18)
+    plt.ylim(maxcompetionEffect, abs(maxcompetionEffect))
+    plt.xticks(rotation=90)
+    plt.show()
+    return True
+
+def plot_combined_synergy_competition_line(common_reactions, combined_df, sorted_expected_additive_effect):
+    fig, ax = plt.subplots(figsize=(12, 8))
+
+    # Plot der erwarteten additiven Effekte
+    ax.plot(common_reactions, sorted_expected_additive_effect, label='Expected Additive Effect', color='black', linestyle='-', marker='o')
+
+    # Plot der Flüsse der Community-Modelle
+    ax.plot(common_reactions, combined_df['Community Model 1'].reindex(common_reactions).values, label='Compartmentalized Community Model', color='blue', linestyle='--', marker='x')
+    ax.plot(common_reactions, combined_df['Community Model 2'].reindex(common_reactions).values, label='Pooled Community Model', color='orange', linestyle='--', marker='x')
+
+    ax.set_ylabel('Flux Value', fontsize=20)
+    ax.set_xlabel('Common Reactions', fontsize=20)
+    ax.set_title('Synergy and Competition in Microbial Communities', fontsize=25)
+    plt.xticks(rotation=45, fontsize=18)
+    plt.axhline(0, color='grey', linewidth=0.5)
+    plt.grid(True)
+    plt.legend(fontsize=22)
+    plt.show()
+    return True
+
 ECM_comp = pd.read_csv("..\ECMwithdG\ECM_comp_w_dG.csv", delimiter=',')
 ECM_pool = pd.read_csv("..\ECMwithdG\ECM_pooled_w_dG.csv", delimiter=',')
 ECM_nest = pd.read_csv("..\ECMwithdG\ECM_nested_w_dG.csv", delimiter=',')
@@ -253,6 +382,14 @@ model={
     'srb': cobra.io.read_sbml_model('..\models\srb.xml'),
     'syn': cobra.io.read_sbml_model('..\models\syn.xml')
 }
+optimal={}
+
+optimal['srb'] = model['srb'].optimize()
+optimal['comp'] = model['comp'].optimize()
+optimal['pool'] = model['pool'].optimize()
+optimal['nest'] = model['nest'].optimize()
+optimal['fap'] = model['fap'].optimize()
+optimal['syn'] = model['syn'].optimize()
 
 communitymodel={
     'comp': cobra.io.read_sbml_model('..\models\compartmentalized_model.xml'),
@@ -268,18 +405,23 @@ optimal_fluxes={}
 for model_name, ECM in ECM.items():
     maxbmflux[model_name], maxbm_vector[model_name], maxbm_ECMs[model_name], optimal_fluxes[model_name] = getOptimization(ECM ,model[model_name],1)
     plotCorrelationMatrix(maxbm_vector[model_name], model_name)
-    plotOptimizedFluxesFBAvsECM(model[model_name], optimal_fluxes[model_name], model_name)
+    plotOptimizedFluxesFBAvsECM(optimal[model_name], model[model_name], optimal_fluxes[model_name], model_name)
     plotOptimizedFluxvsdG(maxbm_vector[model_name],model_name)
 
-
+#The following function computes and plots the interaction analysis of comp and pool compared to the expected additive effects
+"""
+getInteractionAnalysis(optimal_fluxes["fap"], optimal_fluxes['srb'], optimal_fluxes['syn'], optimal_fluxes['comp'], optimal_fluxes['pool'])
+"""
+print("Done!")
 #The following section computes the sensitivity analysis of all community model types
+"""
+ECM_comp_norm = getNormalizedData(ECM_comp)
+ECM_pool_norm = getNormalizedData(ECM_pool)
+ECM_nest_norm = getNormalizedData(ECM_nest)
 
-#ECM_comp_norm = getNormalizedData(ECM_comp)
-#ECM_pool_norm = getNormalizedData(ECM_pool)
-#ECM_nest_norm = getNormalizedData(ECM_nest)
+nutrients =["hv", "SO4", "CO2", "NH3", "O2", "H2"]
 
-#nutrients =["hv", "SO4", "CO2", "NH3", "O2", "H2"]
-#range_values = [[ECM_comp_norm['hv_gen'], 
+range_values = [[ECM_comp_norm['hv_gen'], 
                  ECM_comp_norm['SO4ex_gen'], 
                  ECM_comp_norm['CO2ex_gen'], 
                  ECM_comp_norm['NH3_syn'], 
@@ -300,4 +442,5 @@ for model_name, ECM in ECM.items():
                  ECM_nest_norm['O2expool_gen_fap'], 
                  ECM_nest_norm['H2pool_gen_fap']]]
 
-#SensitivityMatrix = getSensitivityMatrix(communitymodel, nutrients, range_values)
+SensitivityMatrix = getSensitivityMatrix(communitymodel, nutrients, range_values)
+"""
