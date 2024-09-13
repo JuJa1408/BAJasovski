@@ -9,6 +9,13 @@ from helper_functions import  *
 
 
 def getOptimization(ECM_dG, model, method):
+    """
+    This function first normalizes all ECMs than it sets bimas sproduction as obejctive.
+    Afterwards the boundary reactions get mapped to the respective external metabolite of the ECM.
+    All bounds of the boundary reactions are first set to 0 and than changed afterwards to the 
+    respective ECM coefficient (depending on the optimization method). Within the new bounds 
+    the optimization get performed.   
+    """
     maxbm = []
     all_bm_met = []
     all_fluxes = {}
@@ -40,7 +47,6 @@ def getOptimization(ECM_dG, model, method):
             if component in transporter:
                 transporters[component] = transporter    
 
-    #transporters = dict(zip(ECM.columns, transporters_names))
     for t in transporters_names:
         try:
             r = model.reactions.get_by_id(t)
@@ -58,13 +64,12 @@ def getOptimization(ECM_dG, model, method):
                 if "bm" not in col:
                     model.reactions.get_by_id(transporters[col]).bounds=b
             sol = model.optimize()
-            #print(sol.objective_value)
-            #print("END")
+
             maxbm.append(sol.objective_value)
             if sol.status == 'optimal':
-                all_fluxes[idx] = sol.fluxes#pd.Series(data={'fluxes': sol.fluxes}, index=[r.id for r in m.reactions] )
+                all_fluxes[idx] = sol.fluxes
             else:
-                all_fluxes[idx] = pd.Series([0] * len(m.reactions), index=[r.id for r in m.reactions])
+                all_fluxes[idx] = pd.Series([0] * len(model.reactions), index=[r.id for r in model.reactions])
 
         maxbm_df_vector = pd.DataFrame(index=normalized_ECM.index, data={'maxbm': maxbm, 'dG': ECM_dG['dG']})
         maxbm_df_vector = maxbm_df_vector.sort_values(by='maxbm', ascending=False)
@@ -76,14 +81,14 @@ def getOptimization(ECM_dG, model, method):
         optimal_fluxes = AllFluxes_sorted['otherfluxes'].loc[AllFluxes_sorted.index[0]]
     
     elif method == 2:
-        # Maximale Werte für jede Spalte finden (für upper bounds)
+        # Max Values for every column (for upper bounds)
         max_values = normalized_ECM.max()
 
-        # Minimale Werte für jede Spalte finden (für lower bounds)
+        # Min Values for every column (for lower bounds)
         min_values = normalized_ECM.min()
         maxbm_ECMs = 0
         maxbm_df_vector = 0
-        # Setze die Grenzen für jede Reaktion
+        # Set bounds for every reaction
         for col, max_val in max_values.items():
             min_val = min_values[col]
             if "bm" not in col:
@@ -95,7 +100,7 @@ def getOptimization(ECM_dG, model, method):
                 else:
                     reaction.bounds = (min_val, 0)
 
-        # Optimiere einmal
+        # Optimiie once
         sol = model.optimize()
 
         if sol.status == 'optimal':
@@ -108,6 +113,9 @@ def getOptimization(ECM_dG, model, method):
     return maxbm_df, maxbm_df_vector, maxbm_ECMs, optimal_fluxes
 
 def getFBA(model):
+    """
+    This old function computes the FBA of a model but it is not used anymore
+    """
     all_bm_met = []
     """
     for met in model.metabolites:
@@ -135,7 +143,21 @@ def getFBA(model):
     return optimal, other_fluxes
 
 def getSensitivityMatrix(models, nutrient, range_values):
-    
+    """
+    Input: 
+    models = original cobrapy model
+    nutrients = some choosen metabolite strings from the respective model (hv, SO4, CO2, NH3, O2, H2) 
+    range_values = the column of the choosen metabolites from the ECM of the model 
+
+    Output: 
+    Sensitivitymatrix with the nutrients as columns and models as row. 
+    Each cell containts the maximal change of objective flux over boundary changes of 
+    the respective nutriente.
+
+    This function computes the Sensitivitymatrix (and plots it in form of a heatmap) over all models of some nutrients which shows 
+    how much of an impact the boundary change of a metabolite within the model has on the 
+    optimization of the objective. It utilizes normalized ECM coefficient as the new boundaries of the model.  
+    """
     sensitivitymatrix = pd.DataFrame(index=nutrient, columns=models.keys())
     m=0
     
@@ -185,6 +207,11 @@ def getSensitivityMatrix(models, nutrient, range_values):
     return sensitivitymatrix
 
 def plotCorrelationMatrix(maxBiomass, model_name):
+    """
+    This function plots the correlationmatrix in form of a heatmap 
+    from the model "model_name" which shows how much of a correlation between 
+    the standard Gibbs free energy of each ECM and the optimized objective flux of each ECM
+    """
     sns.set(font_scale=2)
     corr=maxBiomass.corr() 
     x_axis_labels = ['maximal $v_{Biomass}$', '$\Delta G^\circ$']
@@ -195,9 +222,12 @@ def plotCorrelationMatrix(maxBiomass, model_name):
     return True
 
 def plotOptimizedFluxesFBAvsECM(optimal_FBA, model, ECM_allFlux, model_name):
+    """
+    This function compares the fluxes of each reaction after both types of 
+    optimization with ECM and only FBA. The fluxes get normalized so a better comparison is possible.
+    This function plots one lineplot for both set of fluxes   
+    """
 
-    #objectiveFlux, FBA_allFlux = getFBA(model)
-    #optimal_FBA = model.optimize()
     FBA_allFlux = optimal_FBA.fluxes
     FBA_allFlux_norm = FBA_allFlux/(sum(abs(FBA_allFlux)))
     ECM_allFlux_norm = ECM_allFlux/(sum(abs(ECM_allFlux)))
@@ -208,18 +238,21 @@ def plotOptimizedFluxesFBAvsECM(optimal_FBA, model, ECM_allFlux, model_name):
     ax.plot(FBA_allFlux_norm.index, FBA_allFlux_norm, label = 'FBA optimization', color='red', linestyle='--', marker='x')
     ax.set_ylabel('Normalized Flux Value', fontsize=25)
     ax.set_xlabel('Reactions', fontsize=25)
-    #plt.ylim(-3000,3000)
     plt.xticks(rotation=90, fontsize=18)
     plt.axhline(0, color='grey', linewidth=0.5)
     plt.grid(True)
     plt.legend(fontsize=27.5)
-    #plt.title( fontsize=25)
     #plt.text(0, -0.15 , f"ECM: {getReaction(maxBiomassECM_pool).iloc[0,0]}", fontsize=16, ha='left', wrap=True, bbox=dict(facecolor='white', pad=10.0))
     plt.tight_layout()
     plt.show()
     return True
 
 def plotOptimizedFluxvsdG(maxBiomass, model_name):
+    """
+    This function plots the optimized objective flux of the model "model_name" in a sorted barplot.
+    Each column/bar represents the flux of one ECM. Every column has also a cross x which shows the 
+    Gibbs free energy of the respective ECM. 
+    """
     Sorted_maxBiomass = maxBiomass[maxBiomass['maxbm']>0].sort_values(by='maxbm', ascending=False).reset_index(drop=True)
     fig, ax1 = plt.subplots()
     bars = ax1.bar(Sorted_maxBiomass.index, Sorted_maxBiomass['maxbm'], color='tab:blue', label='Maximal Flux vBM')
@@ -238,16 +271,20 @@ def plotOptimizedFluxvsdG(maxBiomass, model_name):
     plt.show()
     return True
 
-def helperInteravtionAnalysis(community_fluxes, individual_fluxes):
+def helperInteractionAnalysis(community_fluxes, individual_fluxes):
+    """
+    This function computes the interaction metrics of the community model compared to the
+    additive effects of the individual models. First it finds the common reactions of the community model
+    compared to the additive unicellular models. Than the interaction gets quatified as synergy 
+    (with the interaction value being >0) and competition (with the interaction value being <0).
+    """
     synergy = {}
     competition = {}
     additive_effects = {}
-    common_reactions = set()
-
     
     common_reactions = set(community_fluxes.index)
 
-    # Bestimme die gemeinsamen Reaktionen
+    # Find common reactions
     common_reactions.intersection_update(individual_fluxes.index)
     for reaction in common_reactions:
         community_flux = community_fluxes[reaction]
@@ -283,12 +320,14 @@ def helperInteravtionAnalysis(community_fluxes, individual_fluxes):
                                 'Synergy': pd.Series(synergy), 
                                 'Competition': pd.Series(competition)})
 
-
-
-
     return results_df, common_reactions
 
 def getInteractionAnalysis(allFlux_fap, allFlux_srb, allFlux_syn, allFlux_comp, allFlux_pool):
+    """
+    This function computes the interaction analysis of multiple community models compared to 
+    the additive effects of the unicellular models. The fluxes that are looked at are normalized 
+    first for a better comparisson between community models.
+    """
     allFlux_additive = pd.concat([allFlux_fap, allFlux_srb, allFlux_syn], axis=0)
     sumFlux = (sum(abs(allFlux_additive)))
     allFlux_additive = allFlux_additive/sumFlux
@@ -298,10 +337,10 @@ def getInteractionAnalysis(allFlux_fap, allFlux_srb, allFlux_syn, allFlux_comp, 
    
     individual_fluxes = allFlux_additive#pd.concat([allFlux_fap, allFlux_srb, allFlux_syn], axis=0)
 
-    compAnalysis, commonreactions = helperInteravtionAnalysis(allFlux_comp, individual_fluxes)
+    compAnalysis, commonreactions = helperInteractionAnalysis(allFlux_comp, individual_fluxes)
     plot_synergy_competition(compAnalysis, 'Compartmentalized')
 
-    poolAnalysis, commonreactions = helperInteravtionAnalysis(allFlux_pool, individual_fluxes)
+    poolAnalysis, commonreactions = helperInteractionAnalysis(allFlux_pool, individual_fluxes)
     plot_synergy_competition(poolAnalysis, 'Pooled')
 
     combined_df = pd.DataFrame({
@@ -311,16 +350,20 @@ def getInteractionAnalysis(allFlux_fap, allFlux_srb, allFlux_syn, allFlux_comp, 
     })
     sorted_df = combined_df.reindex(commonreactions).sort_values(by='Expected Additive Effect')
 
-    # Erstellung des Plots
     plot_combined_synergy_competition_line(sorted_df.index, combined_df, sorted_df['Expected Additive Effect'].values)
 
     return True
 
 def plot_synergy_competition(results_df, modelname):
-    # Kombiniere Synergie und Konkurrenz in einer Spalte
+    """
+    This function shows for one model the interaction value of each reaction in form of a bar plot.
+    positive interaction values are blue and represent synergies within the community 
+    and negative interaction values are orange and represent the competition within the community.
+    """
+    # Combine synergy and competition in one column
     results_df['Effect'] = results_df['Synergy'].combine_first(results_df['Competition'])
     
-    # Bereite die Daten für das Plotten vor
+    # Prepare data fro plotting
     effects = results_df['Effect']
     colors = ['blue' if val > 0 else 'orange' for val in effects]
     maxcompetionEffect = np.min(effects)
@@ -339,12 +382,16 @@ def plot_synergy_competition(results_df, modelname):
     return True
 
 def plot_combined_synergy_competition_line(common_reactions, combined_df, sorted_expected_additive_effect):
+    """
+    This function plot all interaction values of each reaction of the common reaction set to 
+    compare the expected additive fluxes with the community models in one lineplot  
+    """
     fig, ax = plt.subplots(figsize=(12, 8))
 
-    # Plot der erwarteten additiven Effekte
+    # Plot expected additiven effects
     ax.plot(common_reactions, sorted_expected_additive_effect, label='Expected Additive Effect', color='black', linestyle='-', marker='o')
 
-    # Plot der Flüsse der Community-Modelle
+    # Plot fluxes of community model
     ax.plot(common_reactions, combined_df['Community Model 1'].reindex(common_reactions).values, label='Compartmentalized Community Model', color='blue', linestyle='--', marker='x')
     ax.plot(common_reactions, combined_df['Community Model 2'].reindex(common_reactions).values, label='Pooled Community Model', color='orange', linestyle='--', marker='x')
 
@@ -412,7 +459,7 @@ for model_name, ECM in ECM.items():
 """
 getInteractionAnalysis(optimal_fluxes["fap"], optimal_fluxes['srb'], optimal_fluxes['syn'], optimal_fluxes['comp'], optimal_fluxes['pool'])
 """
-print("Done!")
+
 #The following section computes the sensitivity analysis of all community model types
 """
 ECM_comp_norm = getNormalizedData(ECM_comp)

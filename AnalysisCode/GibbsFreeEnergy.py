@@ -6,7 +6,11 @@ from equilibrator_api import ComponentContribution, Q_, Reaction
 from scipy import constants 
 
 def getDataBaseCode(metabolite_name):
-    #Hashmap to map database IDs of modelSeed, KEGG and Chebi to respective metabolite
+    """
+    This function represents the hashmap to map database IDs of modelSeed, 
+    KEGG and Chebi to respective metabolite. For other microbes with different 
+    metabolites this hashmap needs to be adapted. 
+    """
     metabolite_name_cpd ={
         'ac': "cpd00029",
         'ATP': "cpd00002",
@@ -49,7 +53,10 @@ def getDataBaseCode(metabolite_name):
         return None
     
 def getBiomass(cc):
-
+    """
+    This function computes the biomass expression and the Gibbs free energy of that biomass.
+    For other microbes this biomass expression needs to be adapted.  
+    """
     biomass_term ={
     "ac_CoA", 
     "akg",
@@ -77,7 +84,10 @@ def getBiomass(cc):
     return bm, compounds_bm
 
 def getGibbsFreeEnergy(ECM):
-    #This function computes the gibbs free energy of each ECM 
+    """
+    This function computes the Gibbs free energy of each ECM.
+    A n-sized vector gets retured with n being the number of ECMs with each ECMs respective Gibbs free energy  
+    """
     cc = ComponentContribution()
     cc.p_h = Q_(7.5)
     cc.temperature = Q_("298.15K")
@@ -100,13 +110,11 @@ def getGibbsFreeEnergy(ECM):
             dgf0[name] = ( h * c * 3.79 * 10 ** 14 ) / (1000)   
         else:
             dgf0[name] = [value]        
-
     
     dgf0 = dgf0.fillna(value=np.nan)
     dgf = ECM.dot(dgf0.transpose())
 
     return dgf
-
 
 
 ECM_comp = pd.read_csv("..\ECMnormalized\ECM_comp_normalized.csv", delimiter=',')

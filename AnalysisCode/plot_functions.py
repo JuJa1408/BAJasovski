@@ -8,6 +8,13 @@ from cobra.io import read_sbml_model
 from helper_functions import  *
 
 def plotECM(ECM):
+    """
+     This function plots the heatmap of an ECM with a blue cell representing a substrate 
+     and a red cell representing a product. Right now the plot is set with only signs of the coefficient but this can be changed 
+     when removing the np.sign() and optionally adding vmax=10 and vmin=-10  
+    
+    """
+
     fig1 = plt.figure(figsize=(8, 10))
     gs = gridspec.GridSpec(2, 1, height_ratios=[5, 1])  
 
@@ -26,10 +33,15 @@ def plotECM(ECM):
     return True
 
 def plotSorteddG(ECM, dgf):
+    """
+    This function plots the Gibbs free energy of every ECM and sorts them in  a barplot
+    the comments inbetween lines are to access the 3 ECMs with highest Gibbs free energy 
+    and the 3 with lowest Gibbs free energy 
+
+    """
 
     positive_dgf = (ECM['dG'] >= 0).sum()
     print(ECM.loc[ECM['dG'] >= 0])
-    #print(len(dgf_fap))
     print(positive_dgf)
     #positive_ECMs= getReaction(ECM_fap.loc[ECM_fap['dG'] >= 0])
     #print(positive_ECMs)
@@ -37,7 +49,6 @@ def plotSorteddG(ECM, dgf):
     sorted_dgf = dgf.sort_values(ascending=True)
     smallest_dg_indices = sorted_dgf.head(3).index
     biggest_dg_indices = sorted_dgf.tail(3).index
-    #biggest_dg_indices = sorted_dgf.tail(5).inex
     ECM = ECM.drop('dG', axis=1)
     #smallest_dgf_ECMs = ECM.loc[smallest_dg_indices]
     #biggest_dgf_ECMs = ECM.loc[biggest_dg_indices]
@@ -50,11 +61,10 @@ def plotSorteddG(ECM, dgf):
     sorted_dgf.plot(kind='bar', legend=False)
     first_positive_index = sorted_dgf[sorted_dgf > 0].index[0]
 
-    # Finden der Position dieses Index in der sortierten DataFrame
     line_position = sorted_dgf.index.get_loc(first_positive_index)
 
     plt.axvline(x=line_position - 0.5, color='orange', linestyle='--',
-            label='Trennung zwischen negativ und positiv', linewidth=4)
+            label='Boundary between negative and positive', linewidth=4)
 
     #plt.ylim(-20000, 5000)
     #plt.yscale('log')
@@ -77,7 +87,12 @@ def plotSorteddG(ECM, dgf):
     return True
 
 def plotCompareShareMetabolitesInAndOut(Cells):
+    """
+    This function plots the first interaction analysis heatmap where on the left side there 
+    are the perecentage of accurance of a metabolite over all ECMs from one microbe and on 
+    the right side the respective percentage of product occurance 
 
+    """
     metabolites = set()
     for df in Cells.values():
         metabolites.update(df.columns)
@@ -135,12 +150,11 @@ def plotCompareShareMetabolitesInAndOut(Cells):
     mask = percentage_data == 0
     cmap = sns.color_palette("coolwarm", as_cmap=True)
     print(annotations)
-    #ax = sns.heatmap(percentage_data, cmap=cmap, center=0, vmin=-100, vmax=100, mask=mask, annot=annotations, fmt="s")
     ax = sns.heatmap(percentage_data, cmap=cmap, center=0, vmin=-100, vmax=100, mask=mask, annot=annotations, fmt="s",
                     linewidths=0.5, linecolor='white')
     ax.xaxis.tick_top()
     ax.set_title('Share of occurence in all ECMs of each microbe', fontsize= 25)
-    cmap.set_bad('white')  # Setzt die Farbe für maskierte Werte (hier: 0-Werte)
+    cmap.set_bad('white')  
     ax.vlines([3],*ax.get_ylim(),colors="black")
 
     plt.show()
@@ -148,12 +162,19 @@ def plotCompareShareMetabolitesInAndOut(Cells):
     return True
 
 def plotSynergyCompetitionLine(common_reactions, combined_df, sorted_expected_additive_effect):
+    """
+    This plot generates the interaction analysis in form of a line plot. Here it first computes
+    the expected additive effects of each reaction flux with the unicellular models and aferwards 
+    it gets compared with the fluxes of the same reactions within a community model. If the flux in 
+    the community is higher than the additive effect, there are synergy effects within the community 
+    if the flux is below the additive effect there is competition behaviour in the community.
+    """
     fig, ax = plt.subplots(figsize=(12, 8))
 
-    # Plot der erwarteten additiven Effekte
+    # Plot of expected additive effects
     ax.plot(common_reactions, sorted_expected_additive_effect, label='Expected Additive Effect', color='black', linestyle='-', marker='o')
 
-    # Plot der Flüsse der Community-Modelle
+    # Plot flux of community model
     ax.plot(common_reactions, combined_df['Community Model 1'].reindex(common_reactions).values, label='Compartmentalized Community Model', color='blue', linestyle='--', marker='x')
     ax.plot(common_reactions, combined_df['Community Model 2'].reindex(common_reactions).values, label='Pooled Community Model', color='orange', linestyle='--', marker='x')
 

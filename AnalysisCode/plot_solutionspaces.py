@@ -10,8 +10,9 @@ from helper_functions import  *
 
 
 def helper_model_to_yield_2D(model_name, substrate, product, ECMs):
-    # Diese Funktion simuliert die Berechnung von ECM-Yields
-    # In einer echten Anwendung wird hier der ECM-Algorithmus aufgerufen    
+    """
+    This function simulates the computation of the ECM-yields
+    """
     yields = [
         ECMs[model_name][substrate],
         ECMs[model_name][product]
@@ -19,6 +20,10 @@ def helper_model_to_yield_2D(model_name, substrate, product, ECMs):
     return [yields]
 
 def compare_ecm_solution_spaces(substrate, product, ECMs):
+    """
+    This function computes and plots the convex hull of the ECM with respect to 
+    the substrate to product 2D plane.
+    """
     colors = ['b', 'r', 'g']
     plt.figure()
     i=1
